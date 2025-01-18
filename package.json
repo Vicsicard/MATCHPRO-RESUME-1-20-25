@@ -1,0 +1,25 @@
+{
+  "name": "matchpro-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*",
+    "libs/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "deploy": "turbo run deploy"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@turbo/gen": "^1.11.3",
+    "prettier": "^3.1.1",
+    "turbo": "^1.11.3"
+  },
+  "packageManager": "pnpm@8.9.0"
+}
