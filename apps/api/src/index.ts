@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
+import path from 'path';
+
 // Load environment variables first
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 import express from 'express';
 import cors from 'cors';
@@ -12,6 +14,7 @@ import resumesRouter from './routes/resumes';
 import applicationsRouter from './routes/applications';
 import profileRouter from './routes/profile';
 import authRouter from './routes/auth';
+import jobsRouter from './routes/jobs';
 import { specs } from './swagger';
 
 // Log environment variables (without sensitive values)
@@ -44,6 +47,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/resumes', resumesRouter);
 app.use('/api/applications', applicationsRouter);
 app.use('/api/profile', profileRouter);
+app.use('/api/jobs', jobsRouter);
 
 // Health check
 app.get('/health', (req, res) => {

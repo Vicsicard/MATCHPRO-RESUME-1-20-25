@@ -17,7 +17,6 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.5",
     "@mui/material": "^5.15.5",
-    "framer-motion": "^10.16.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -25,7 +24,6 @@
     "react": "^18.2.0",
     "@mui/material": "^5.15.5",
     "@emotion/react": "^11.11.3",
-    "@emotion/styled": "^11.11.0",
-    "framer-motion": "^10.16.4"
+    "@emotion/styled": "^11.11.0"
   }
 }

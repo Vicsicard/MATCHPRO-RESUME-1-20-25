@@ -15,6 +15,8 @@ const nextConfig = {
   experimental: {
     esmExternals: 'loose',
   },
+  // Exclude test files from the build
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx'].map(ext => `page.${ext}`),
 };
 
 module.exports = nextConfig;

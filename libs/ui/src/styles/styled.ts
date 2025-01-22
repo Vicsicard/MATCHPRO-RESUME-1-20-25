@@ -1,4 +1,4 @@
-import styled from '@emotion/styled';
+import styledOriginal from '@emotion/styled';
 import { Theme } from '@mui/material/styles';
 
 export type StyledComponent<P> = {
@@ -6,4 +6,4 @@ export type StyledComponent<P> = {
   displayName?: string;
 };
 
-export { styled };
+export default styledOriginal;

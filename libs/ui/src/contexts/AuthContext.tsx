@@ -26,8 +26,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const user = await getCurrentUser();
       setUser(user);
-    } catch (error) {
-      console.error('Error checking user:', error);
+    } catch (error: any) {
+      // Only log error if it's not a missing session error
+      if (!error.message?.includes('Auth session missing')) {
+        console.error('Error checking user:', error);
+      }
+      setUser(null);
     } finally {
       setLoading(false);
     }
