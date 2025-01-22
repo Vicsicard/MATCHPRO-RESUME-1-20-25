@@ -1,4 +1,4 @@
-import { SignInForm } from '@matchpro/ui/src/components/Auth/SignInForm';
+import { SignInForm } from '@matchpro/ui';
 import Link from 'next/link';
 
 export default function SignInPage() {

@@ -22,21 +22,18 @@ export async function extractTextFromDOCX(buffer: Buffer): Promise<string> {
 }
 
 export function detectFileType(filename: string): 'pdf' | 'docx' | 'unknown' {
-  const extension = filename.toLowerCase().split('.').pop();
-  
-  switch (extension) {
-    case 'pdf':
-      return 'pdf';
-    case 'docx':
-      return 'docx';
-    default:
-      return 'unknown';
-  }
+  const ext = filename.toLowerCase().split('.').pop();
+  if (ext === 'pdf') return 'pdf';
+  if (ext === 'docx') return 'docx';
+  return 'unknown';
 }
 
-export async function extractTextFromDocument(buffer: Buffer, filename: string): Promise<string> {
+export async function extractTextFromDocument(
+  buffer: Buffer,
+  filename: string
+): Promise<string> {
   const fileType = detectFileType(filename);
-  
+
   switch (fileType) {
     case 'pdf':
       return extractTextFromPDF(buffer);
@@ -46,3 +43,10 @@ export async function extractTextFromDocument(buffer: Buffer, filename: string):
       throw new Error('Unsupported file type');
   }
 }
+
+export const DocumentService = {
+  extractTextFromPDF,
+  extractTextFromDOCX,
+  detectFileType,
+  extractTextFromDocument,
+};

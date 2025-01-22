@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { ChatCompletionMessageParam } from 'openai/resources/chat';
+import type { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 
 if (!process.env.OPENAI_API_KEY) {
   throw new Error('Missing OPENAI_API_KEY');
@@ -21,6 +21,21 @@ export interface JobMatchAnalysis {
   matchingSkills: string[];
   missingSkills: string[];
   recommendations: string[];
+}
+
+export interface OptimizeResumeParams {
+  resumeContent: string;
+  jobDescription: string;
+}
+
+export interface AnalyzeJobMatchParams {
+  resumeContent: string;
+  jobDescription: string;
+}
+
+export interface GenerateCoverLetterParams {
+  resumeContent: string;
+  jobDescription: string;
 }
 
 export class OpenAIService {
@@ -64,51 +79,10 @@ export class OpenAIService {
     }
   }
 
-  static async analyzeJobMatch(
-    resumeText: string,
-    jobDescription: string
-  ): Promise<JobMatchAnalysis> {
-    const messages: ChatCompletionMessageParam[] = [
-      {
-        role: 'system',
-        content: `You are an expert job matching analyzer. Compare the candidate's resume with the job description and provide detailed analysis.
-          Focus on: matching skills, missing requirements, and overall fit.
-          Calculate a match score based on skills, experience, and qualifications.
-          Provide specific recommendations for improving the match.`,
-      },
-      {
-        role: 'user',
-        content: `Resume: "${resumeText}"
-          Job Description: "${jobDescription}"
-          Please provide analysis in JSON format with the following structure:
-          {
-            "matchScore": number,
-            "matchingSkills": string[],
-            "missingSkills": string[],
-            "recommendations": string[]
-          }`,
-      },
-    ];
-
-    try {
-      const response = await openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
-        messages,
-        temperature: 0.7,
-        response_format: { type: 'json_object' },
-      });
-
-      return JSON.parse(response.choices[0].message.content || '{}');
-    } catch (error) {
-      console.error('Error analyzing job match:', error);
-      throw error;
-    }
-  }
-
-  static async generateCoverLetter(
-    resumeText: string,
-    jobDescription: string
-  ): Promise<string> {
+  static async generateCoverLetter({
+    resumeContent,
+    jobDescription,
+  }: GenerateCoverLetterParams): Promise<string> {
     const messages: ChatCompletionMessageParam[] = [
       {
         role: 'system',
@@ -117,7 +91,7 @@ export class OpenAIService {
       },
       {
         role: 'user',
-        content: `Resume: "${resumeText}"
+        content: `Resume: "${resumeContent}"
           Job Description: "${jobDescription}"
           Please generate a professional cover letter that connects the candidate's experience with the job requirements.`,
       },
@@ -130,42 +104,74 @@ export class OpenAIService {
         temperature: 0.7,
       });
 
-      return response.choices[0].message.content || '';
+      return response.choices[0]?.message?.content || '';
     } catch (error) {
       console.error('Error generating cover letter:', error);
       throw error;
     }
   }
 
-  static async improveResume(
-    resumeText: string,
-    targetJob: string
-  ): Promise<string> {
-    const messages: ChatCompletionMessageParam[] = [
-      {
-        role: 'system',
-        content: `You are an expert resume writer. Improve the candidate's resume to better match their target job.
-          Focus on: highlighting relevant experience, using impactful action verbs, quantifying achievements, and optimizing for ATS systems.`,
-      },
-      {
-        role: 'user',
-        content: `Resume: "${resumeText}"
-          Target Job: "${targetJob}"
-          Please provide an improved version of the resume with specific suggestions for enhancement.`,
-      },
-    ];
+  static async optimizeResume({
+    resumeContent,
+    jobDescription,
+  }: OptimizeResumeParams): Promise<string> {
+    const prompt = `
+      As an expert resume optimizer, analyze the following resume content and job description.
+      Provide specific suggestions to optimize the resume for this job, focusing on:
+      1. Relevant skills and experience alignment
+      2. Key achievements and metrics
+      3. Industry-specific terminology
+      4. Action verbs and impactful language
 
-    try {
-      const response = await openai.chat.completions.create({
-        model: 'gpt-4-turbo-preview',
-        messages,
-        temperature: 0.7,
-      });
+      Resume Content:
+      ${resumeContent}
 
-      return response.choices[0].message.content || '';
-    } catch (error) {
-      console.error('Error improving resume:', error);
-      throw error;
-    }
+      Job Description:
+      ${jobDescription}
+
+      Please provide the optimized resume content.
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+      max_tokens: 2000,
+    });
+
+    return response.choices[0]?.message?.content || '';
+  }
+
+  static async analyzeJobMatch({
+    resumeContent,
+    jobDescription,
+  }: AnalyzeJobMatchParams): Promise<string> {
+    const prompt = `
+      As an expert job match analyzer, compare the following resume content with the job description.
+      Provide a detailed analysis of:
+      1. Skills match percentage
+      2. Experience alignment
+      3. Missing key requirements
+      4. Recommendations for improvement
+
+      Resume Content:
+      ${resumeContent}
+
+      Job Description:
+      ${jobDescription}
+
+      Please provide a detailed analysis.
+    `;
+
+    const response = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7,
+      max_tokens: 1000,
+    });
+
+    return response.choices[0]?.message?.content || '';
   }
 }
+
+export { OpenAIService as default };

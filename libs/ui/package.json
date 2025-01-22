@@ -10,11 +10,22 @@
     "lint": "eslint src/",
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist"
   },
+  "dependencies": {
+    "@matchpro/data": "workspace:*",
+    "lucide-react": "^0.330.0",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "@mui/icons-material": "^5.15.5",
+    "@mui/material": "^5.15.5",
+    "framer-motion": "^10.16.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
   "peerDependencies": {
     "react": "^18.2.0",
-    "@mui/material": "^6.1.7",
-    "@emotion/react": "^11.13.3",
-    "@emotion/styled": "^11.13.0",
-    "framer-motion": "^11.11.17"
+    "@mui/material": "^5.15.5",
+    "@emotion/react": "^11.11.3",
+    "@emotion/styled": "^11.11.0",
+    "framer-motion": "^10.16.4"
   }
 }

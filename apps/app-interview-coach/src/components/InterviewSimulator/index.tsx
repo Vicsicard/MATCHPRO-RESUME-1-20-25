@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Card } from '@matchpro/ui';
-import { useAuth } from '@matchpro/ui/src/contexts/AuthContext';
+import { Button, Card, useAuth } from '@matchpro/ui';
 import { OpenAIService, InterviewFeedback } from '@matchpro/data/src/services/openai';
 
 interface Question {

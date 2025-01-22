@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
 import {
@@ -106,34 +108,40 @@ export function MainNav() {
               </Link>
             ))}
           </div>
-          {user && (
-            <div className="pt-4 pb-3 border-t border-gray-200">
-              <div className="flex items-center px-4">
-                <div className="flex-shrink-0">
-                  <UserIcon className="h-8 w-8 rounded-full" />
+          {/* Mobile User Menu */}
+          <div className="pt-4 pb-3 border-t border-gray-200">
+            {user ? (
+              <div className="space-y-2">
+                <div className="px-4">
+                  <p className="text-sm font-medium text-gray-700">
+                    {user.full_name || user.email}
+                  </p>
                 </div>
-                <div className="ml-3">
-                  <div className="text-base font-medium text-gray-800">
-                    {user.full_name || 'User'}
-                  </div>
-                  <div className="text-sm font-medium text-gray-500">
-                    {user.email}
-                  </div>
-                </div>
-              </div>
-              <div className="mt-3 space-y-1">
-                <button
-                  onClick={() => {
-                    signOut();
-                    setIsMenuOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100"
+                <Button
+                  onClick={() => signOut()}
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  startIcon={<LogOutIcon className="h-4 w-4" />}
                 >
                   Sign Out
-                </button>
+                </Button>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="px-4">
+                <Link href="/signin">
+                  <Button
+                    variant="contained"
+                    size="small"
+                    fullWidth
+                    startIcon={<UserIcon className="h-4 w-4" />}
+                  >
+                    Sign In
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
       )}
     </nav>

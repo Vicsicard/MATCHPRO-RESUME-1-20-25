@@ -2,8 +2,7 @@
 
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ProtectedRoute } from '@matchpro/ui/src/components/Auth/ProtectedRoute';
-import { useAuth } from '@matchpro/ui/src/contexts/AuthContext';
+import { ProtectedRoute, useAuth } from '@matchpro/ui';
 import { JobService } from '../services/jobService';
 import { SearchFilters } from '../components/JobSearch/SearchFilters';
 import { JobCard } from '../components/JobSearch/JobCard';

@@ -1,9 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { AuthProvider } from '@matchpro/ui/src/contexts/AuthContext';
-import { MainNav } from '@matchpro/ui/src/components/Navigation/MainNav';
-import { Footer } from '@matchpro/ui/src/components/Navigation/Footer';
-import '@matchpro/styles/dist/globals.css';
+import { AuthProvider, MainNav, Footer } from '@matchpro/ui';
+import '../styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 

@@ -1,8 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
-import { Button, Card } from '@matchpro/ui';
-import { optimizeResume, analyzeJobMatch } from '@matchpro/data/src/services/openai';
-import { extractTextFromDocument } from '@matchpro/data/src/services/document';
-import { createResume, createJobApplication, saveOptimizationResult } from '@matchpro/data/src/services/database';
+import { Button } from '@matchpro/ui';
+import { Card } from '@matchpro/ui';
 
 interface ResumeOptimizerProps {
   userId: string;
@@ -11,72 +11,42 @@ interface ResumeOptimizerProps {
 export function ResumeOptimizer({ userId }: ResumeOptimizerProps) {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState('');
+  const [optimizedContent, setOptimizedContent] = useState<string | null>(null);
+  const [matchAnalysis, setMatchAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
-    if (files && files[0]) {
-      setFile(files[0]);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!file || !jobDescription) {
+      setError('Please provide both a resume file and job description');
+      return;
     }
-  };
 
-  const handleOptimize = async () => {
-    if (!file || !jobDescription) return;
+    setLoading(true);
+    setError(null);
 
     try {
-      setLoading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('jobDescription', jobDescription);
+      formData.append('userId', userId);
 
-      // Convert file to buffer and extract text
-      const buffer = await file.arrayBuffer();
-      const resumeText = await extractTextFromDocument(
-        Buffer.from(buffer),
-        file.name
-      );
-
-      // Create resume record
-      const resume = await createResume(userId, file.name, resumeText);
-
-      // Create job application record
-      const jobApplication = await createJobApplication(
-        userId,
-        resume.id,
-        'Company', // This could be extracted from job description or input separately
-        'Position', // This could be extracted from job description or input separately
-        jobDescription
-      );
-
-      // Optimize resume
-      const optimizedContent = await optimizeResume({
-        resumeText,
-        jobDescription,
+      const response = await fetch('/api/optimize', {
+        method: 'POST',
+        body: formData,
       });
 
-      // Analyze match
-      const matchAnalysis = await analyzeJobMatch({
-        resumeText,
-        jobDescription,
-      });
+      if (!response.ok) {
+        throw new Error('Failed to optimize resume');
+      }
 
-      // Save optimization result
-      await saveOptimizationResult(
-        userId,
-        resume.id,
-        jobApplication.id,
-        resumeText,
-        optimizedContent
-      );
-
-      setResult(`
-        Optimization Suggestions:
-        ${optimizedContent}
-
-        Match Analysis:
-        ${matchAnalysis}
-      `);
+      const data = await response.json();
+      setOptimizedContent(data.optimizedContent);
+      setMatchAnalysis(data.matchAnalysis);
     } catch (error) {
-      console.error('Error optimizing resume:', error);
-      setResult('An error occurred while optimizing your resume. Please try again.');
+      console.error('Error:', error);
+      setError('Failed to process resume. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -84,16 +54,18 @@ export function ResumeOptimizer({ userId }: ResumeOptimizerProps) {
 
   return (
     <Card className="max-w-4xl mx-auto p-6">
-      <div className="space-y-6">
+      <h2 className="text-2xl font-bold mb-6">Resume Optimizer</h2>
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-gray-700">
-            Upload Resume (PDF or DOCX)
+            Upload Resume (PDF)
           </label>
           <input
             type="file"
-            accept=".pdf,.docx"
-            onChange={handleFileChange}
+            accept=".pdf"
+            onChange={(e) => setFile(e.target.files?.[0] || null)}
             className="mt-1 block w-full"
+            required
           />
         </div>
 
@@ -104,27 +76,42 @@ export function ResumeOptimizer({ userId }: ResumeOptimizerProps) {
           <textarea
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
-            rows={6}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-            placeholder="Paste the job description here..."
+            rows={6}
+            required
           />
         </div>
 
+        {error && (
+          <div className="text-red-600 text-sm">{error}</div>
+        )}
+
         <Button
-          onClick={handleOptimize}
-          loading={loading}
-          disabled={!file || !jobDescription}
-          className="w-full"
+          type="submit"
+          disabled={loading}
+          className="w-full justify-center"
         >
-          Optimize Resume
+          {loading ? 'Processing...' : 'Optimize Resume'}
         </Button>
 
-        {result && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <pre className="whitespace-pre-wrap">{result}</pre>
+        {optimizedContent && (
+          <div className="mt-6">
+            <h3 className="text-xl font-semibold mb-2">Optimized Content</h3>
+            <div className="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">
+              {optimizedContent}
+            </div>
           </div>
         )}
-      </div>
+
+        {matchAnalysis && (
+          <div className="mt-6">
+            <h3 className="text-xl font-semibold mb-2">Match Analysis</h3>
+            <div className="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">
+              {matchAnalysis}
+            </div>
+          </div>
+        )}
+      </form>
     </Card>
   );
 }

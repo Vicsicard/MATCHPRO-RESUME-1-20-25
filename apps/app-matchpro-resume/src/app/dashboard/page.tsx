@@ -1,6 +1,8 @@
-import { ProtectedRoute } from '@matchpro/ui/src/components/Auth/ProtectedRoute';
+'use client';
+
+import { ProtectedRoute } from '@matchpro/ui';
 import { ResumeOptimizer } from '../../components/ResumeOptimizer';
-import { useAuth } from '@matchpro/ui/src/contexts/AuthContext';
+import { useAuth } from '@matchpro/ui';
 
 export default function DashboardPage() {
   const { user } = useAuth();

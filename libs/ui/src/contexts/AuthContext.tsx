@@ -1,6 +1,8 @@
+'use client';
+
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { getCurrentUser, signIn, signOut, signUp } from '@matchpro/data/src/services/auth';
-import type { User } from '@matchpro/data/src/types';
+import { getCurrentUser, signIn, signOut, signUp } from '@matchpro/data';
+import type { User } from '@matchpro/data';
 
 interface AuthContextType {
   user: User | null;

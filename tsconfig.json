@@ -17,13 +17,13 @@
     "noFallthroughCasesInSwitch": true,
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
-    "incremental": true,
     "esModuleInterop": true,
     "paths": {
       "@/*": ["./src/*"],
       "@libs/*": ["./libs/*"],
       "@apps/*": ["./apps/*"]
-    }
+    },
+    "tsBuildInfoFile": "./tsconfig.tsbuildinfo"
   },
   "include": ["src", "apps", "libs"],
   "references": [{ "path": "./tsconfig.node.json" }]
