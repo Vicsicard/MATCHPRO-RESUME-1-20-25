@@ -6,14 +6,14 @@ if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
 
 export const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
-export const createCheckoutSession = async (priceId: string) => {
+export const createCheckoutSession = async (userId: string) => {
   try {
     const response = await fetch('/api/create-checkout-session', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'x-user-id': userId,
       },
-      body: JSON.stringify({ priceId }),
     });
 
     const session = await response.json();

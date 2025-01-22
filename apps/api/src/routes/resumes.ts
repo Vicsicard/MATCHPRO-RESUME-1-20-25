@@ -4,7 +4,7 @@ import { z } from 'zod';
 import { authenticate, AuthenticatedRequest } from '../middleware/auth';
 import { createClient } from '@supabase/supabase-js';
 import { ResumeSchema } from '../types';
-import pdfParse from 'pdf-parse';
+import { PDFExtract, PDFExtractResult } from 'pdf.js-extract';
 import mammoth from 'mammoth';
 
 const router: Router = express.Router();
@@ -103,8 +103,10 @@ router.post('/upload', authenticate, upload.single('file'), async (req: Authenti
     // Extract text content from file
     let content = '';
     if (fileType === 'PDF') {
-      const pdfData = await pdfParse(req.file.buffer);
-      content = pdfData.text;
+      const pdfExtract = new PDFExtract();
+      const data = await pdfExtract.extract(req.file.buffer.toString('base64'));
+      const result: PDFExtractResult = await data;
+      content = result.pages.map(page => page.content.map(item => item.str).join(' ')).join('\n');
     } else {
       const result = await mammoth.extractRawText({ buffer: req.file.buffer });
       content = result.value;

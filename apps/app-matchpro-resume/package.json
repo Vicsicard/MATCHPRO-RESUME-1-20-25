@@ -9,9 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@matchpro/ui": "*",
-    "@matchpro/config": "*",
-    "@matchpro/data": "*",
+    "@matchpro/ui": "workspace:*",
+    "@matchpro/config": "workspace:*",
+    "@matchpro/data": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
     "lucide-react": "^0.321.0",

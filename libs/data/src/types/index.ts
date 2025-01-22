@@ -1,52 +1,52 @@
-export interface User {
+import type { User as SupabaseUser } from '@supabase/supabase-js';
+
+export type User = SupabaseUser;
+
+export interface UserProfile {
   id: string;
   email: string;
-  full_name?: string;
-  created_at: string;
-  updated_at: string;
+  firstName?: string;
+  lastName?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Resume {
   id: string;
-  user_id: string;
-  title: string;
+  userId: string;
   content: string;
-  file_url?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface JobApplication {
   id: string;
-  user_id: string;
-  resume_id: string;
+  userId: string;
+  resumeId: string;
+  jobTitle: string;
   company: string;
-  position: string;
-  job_description: string;
-  status: 'draft' | 'applied' | 'interviewing' | 'offered' | 'rejected';
-  created_at: string;
-  updated_at: string;
+  status: 'pending' | 'submitted' | 'interviewing' | 'accepted' | 'rejected';
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface OptimizationResult {
   id: string;
-  user_id: string;
-  resume_id: string;
-  job_application_id: string;
-  original_content: string;
-  optimized_content: string;
-  match_score?: number;
-  created_at: string;
+  resumeId: string;
+  jobApplicationId: string;
+  optimizedContent: string;
+  score: number;
+  feedback: string;
+  createdAt: string;
 }
 
 export interface Subscription {
   id: string;
-  user_id: string;
-  stripe_customer_id: string;
-  stripe_subscription_id: string;
-  plan_type: 'free' | 'basic' | 'premium';
-  status: 'active' | 'canceled' | 'past_due';
-  current_period_end: string;
-  created_at: string;
-  updated_at: string;
+  userId: string;
+  plan: 'free' | 'basic' | 'premium';
+  status: 'active' | 'canceled' | 'expired';
+  startDate: string;
+  endDate: string;
+  createdAt: string;
+  updatedAt: string;
 }

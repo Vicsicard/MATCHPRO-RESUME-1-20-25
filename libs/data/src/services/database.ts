@@ -1,5 +1,5 @@
 import { supabase } from '@matchpro/config/src/supabase';
-import type { User, Resume, JobApplication, OptimizationResult, Subscription } from '../types';
+import type { Resume, JobApplication, OptimizationResult, Subscription, User } from '../types/index';
 
 export async function getUserById(id: string): Promise<User | null> {
   const { data, error } = await supabase
@@ -12,15 +12,15 @@ export async function getUserById(id: string): Promise<User | null> {
   return data;
 }
 
-export async function createResume(userId: string, title: string, content: string, fileUrl?: string): Promise<Resume> {
+export async function createResume(userId: string, content: string): Promise<Resume> {
   const { data, error } = await supabase
     .from('resumes')
     .insert([
       {
-        user_id: userId,
-        title,
+        userId,
         content,
-        file_url: fileUrl,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       },
     ])
     .select()
@@ -33,20 +33,20 @@ export async function createResume(userId: string, title: string, content: strin
 export async function createJobApplication(
   userId: string,
   resumeId: string,
-  company: string,
-  position: string,
-  jobDescription: string
+  jobTitle: string,
+  company: string
 ): Promise<JobApplication> {
   const { data, error } = await supabase
     .from('job_applications')
     .insert([
       {
-        user_id: userId,
-        resume_id: resumeId,
+        userId,
+        resumeId,
+        jobTitle,
         company,
-        position,
-        job_description: jobDescription,
-        status: 'draft',
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       },
     ])
     .select()
@@ -57,23 +57,22 @@ export async function createJobApplication(
 }
 
 export async function saveOptimizationResult(
-  userId: string,
   resumeId: string,
   jobApplicationId: string,
-  originalContent: string,
   optimizedContent: string,
-  matchScore?: number
+  score: number,
+  feedback: string
 ): Promise<OptimizationResult> {
   const { data, error } = await supabase
     .from('optimization_results')
     .insert([
       {
-        user_id: userId,
-        resume_id: resumeId,
-        job_application_id: jobApplicationId,
-        original_content: originalContent,
-        optimized_content: optimizedContent,
-        match_score: matchScore,
+        resumeId,
+        jobApplicationId,
+        optimizedContent,
+        score,
+        feedback,
+        createdAt: new Date().toISOString(),
       },
     ])
     .select()
@@ -87,7 +86,7 @@ export async function getSubscription(userId: string): Promise<Subscription | nu
   const { data, error } = await supabase
     .from('subscriptions')
     .select('*')
-    .eq('user_id', userId)
+    .eq('userId', userId)
     .single();
 
   if (error) throw error;

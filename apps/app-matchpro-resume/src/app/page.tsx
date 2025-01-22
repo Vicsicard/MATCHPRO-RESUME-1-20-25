@@ -4,6 +4,13 @@ import Link from 'next/link';
 import { Button } from '@matchpro/ui';
 
 export default function HomePage() {
+  // Log environment variables (only public ones)
+  console.log('Environment check:', {
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    apiUrl: process.env.NEXT_PUBLIC_API_URL,
+  });
+
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
