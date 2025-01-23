@@ -1,13 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../Button';
 import { Card } from '../Card';
-import { useAuth } from '../../contexts/AuthContext';
 
 export function SignUpForm() {
-  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -19,6 +17,17 @@ export function SignUpForm() {
     e.preventDefault();
     setError(null);
 
+    // Validate input
+    if (!email || !password || !confirmPassword) {
+      setError('All fields are required');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -27,20 +36,23 @@ export function SignUpForm() {
     setLoading(true);
 
     try {
-      console.log('Starting sign up...');
-      const response = await signUp(email, password);
-      console.log('SignUpForm response:', response);
-      
-      // After successful sign up, redirect to dashboard
-      console.log('Sign up successful, redirecting to dashboard...');
-      router.push('/dashboard');
+      console.log('SignUpForm - Starting sign up process...', { email });
+      await signUp(email, password);
+      console.log('SignUpForm - Sign up successful');
+      // Navigation will be handled by AuthContext
     } catch (error: any) {
-      console.error('Sign up error:', error);
-      if (error.message === 'User already registered') {
-        setError('This email is already registered. Please sign in instead.');
-      } else {
-        setError(error?.message || 'Error creating account. Please try again.');
+      console.error('SignUpForm - Error:', error);
+      let errorMessage = 'Failed to create user account. Please try again.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('already registered')) {
+          errorMessage = 'This email is already registered. Please sign in instead.';
+        } else {
+          errorMessage = error.message;
+        }
       }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -80,6 +92,7 @@ export function SignUpForm() {
             onChange={(e) => setPassword(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             required
+            minLength={6}
           />
         </div>
 
@@ -94,23 +107,19 @@ export function SignUpForm() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
             required
+            minLength={6}
           />
         </div>
 
         <Button
           type="submit"
+          variant="primary"
+          fullWidth
+          loading={loading}
           disabled={loading}
-          className="w-full flex justify-center py-2 px-4"
         >
-          {loading ? 'Creating Account...' : 'Sign Up'}
+          Create Account
         </Button>
-
-        <p className="text-center text-sm text-gray-600">
-          Already have an account?{' '}
-          <a href="/auth/login" className="text-blue-600 hover:text-blue-500">
-            Sign in
-          </a>
-        </p>
       </form>
     </Card>
   );

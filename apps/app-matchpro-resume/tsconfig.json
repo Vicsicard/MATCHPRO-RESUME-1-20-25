@@ -16,6 +16,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@matchpro/data/*": ["../../libs/data/src/*"]
+    },
     "plugins": [
       {
         "name": "next"

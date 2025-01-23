@@ -1,12 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Box, Typography, CircularProgress, Button } from '@mui/material';
 import { CheckCircle } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 
-export default function SuccessPage() {
+function SuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState(true);
@@ -119,5 +119,29 @@ export default function SuccessPage() {
         Go to Dashboard
       </Button>
     </Box>
+  );
+}
+
+export default function SuccessPage() {
+  return (
+    <Suspense
+      fallback={
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '60vh',
+            gap: 2,
+          }}
+        >
+          <CircularProgress size={60} />
+          <Typography variant="h6">Loading...</Typography>
+        </Box>
+      }
+    >
+      <SuccessContent />
+    </Suspense>
   );
 }

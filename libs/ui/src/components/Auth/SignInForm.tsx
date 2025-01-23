@@ -19,11 +19,9 @@ export function SignInForm() {
 
     try {
       console.log('SignInForm - Starting sign in process...');
-      console.log('SignInForm - Using email:', email);
-      
       await signIn(email, password);
-      
       console.log('SignInForm - Sign in successful');
+      // Navigation will be handled by AuthContext
     } catch (error: any) {
       console.error('SignInForm - Sign in error:', error);
       setError(error?.message || 'Invalid email or password');

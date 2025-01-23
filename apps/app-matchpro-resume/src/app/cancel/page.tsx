@@ -3,57 +3,31 @@
 import { useRouter } from 'next/navigation';
 import { Box, Typography, Button } from '@mui/material';
 import { Cancel } from '@mui/icons-material';
-import { motion } from 'framer-motion';
 
 export default function CancelPage() {
   const router = useRouter();
 
   return (
     <Box
-      component={motion.div}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '60vh',
-        gap: 3,
-        textAlign: 'center',
-        px: 2,
-      }}
+      className="flex min-h-[calc(100vh-200px)] flex-col items-center justify-center p-4"
     >
-      <Cancel
-        sx={{
-          fontSize: 80,
-          color: 'error.main',
-          mb: 2,
-        }}
-      />
-      <Typography variant="h4" gutterBottom>
-        Subscription Cancelled
+      <div className="animate-bounce mb-6">
+        <Cancel color="error" sx={{ fontSize: 64 }} />
+      </div>
+      <Typography variant="h4" component="h1" gutterBottom>
+        Payment Cancelled
       </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        Your subscription process was cancelled. No charges have been made to your account.
+      <Typography variant="body1" color="text.secondary" align="center" gutterBottom>
+        Your payment was cancelled. No charges were made.
       </Typography>
-      <Box sx={{ display: 'flex', gap: 2, mt: 2 }}>
-        <Button
-          variant="outlined"
-          size="large"
-          onClick={() => router.push('/pricing')}
-        >
-          Return to Pricing
-        </Button>
-        <Button
-          variant="contained"
-          size="large"
-          onClick={() => router.push('/dashboard')}
-        >
-          Go to Dashboard
-        </Button>
-      </Box>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => router.push('/pricing')}
+        className="mt-6"
+      >
+        Try Again
+      </Button>
     </Box>
   );
 }

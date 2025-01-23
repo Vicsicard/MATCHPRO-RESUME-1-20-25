@@ -4,6 +4,7 @@ create extension if not exists "uuid-ossp";
 -- Create enum types
 create type job_application_status as enum ('PENDING', 'SUBMITTED', 'VIEWED', 'REJECTED', 'ACCEPTED');
 create type resume_file_type as enum ('PDF', 'DOCX');
+create type subscription_status as enum ('TRIAL', 'ACTIVE', 'EXPIRED');
 
 -- Create user_profiles table
 create table if not exists public.user_profiles (
@@ -18,6 +19,19 @@ create table if not exists public.user_profiles (
     created_at timestamptz default now(),
     updated_at timestamptz default now(),
     constraint email_format check (email ~* '^[A-Za-z0-9._+%-]+@[A-Za-z0-9.-]+[.][A-Za-z]+$')
+);
+
+-- Create user_subscriptions table
+create table if not exists public.user_subscriptions (
+    id uuid default uuid_generate_v4() primary key,
+    user_id uuid references auth.users not null,
+    status subscription_status not null default 'TRIAL',
+    stripe_customer_id text,
+    stripe_subscription_id text,
+    trial_ends_at timestamptz not null,
+    current_period_ends_at timestamptz,
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
 );
 
 -- Create resumes table
@@ -64,6 +78,7 @@ create table if not exists public.job_applications (
 
 -- Create RLS policies
 alter table public.user_profiles enable row level security;
+alter table public.user_subscriptions enable row level security;
 alter table public.resumes enable row level security;
 alter table public.job_applications enable row level security;
 
@@ -79,6 +94,19 @@ create policy "Users can update their own profile"
 create policy "Users can insert their own profile"
     on public.user_profiles for insert
     with check (auth.uid() = id);
+
+-- User subscriptions policies
+create policy "Users can view their own subscription"
+    on public.user_subscriptions for select
+    using (auth.uid() = user_id);
+
+create policy "Users can update their own subscription"
+    on public.user_subscriptions for update
+    using (auth.uid() = user_id);
+
+create policy "Users can insert their own subscription"
+    on public.user_subscriptions for insert
+    with check (auth.uid() = user_id);
 
 -- Resumes policies
 create policy "Users can view their own resumes"
@@ -113,6 +141,46 @@ create policy "Users can update their own applications"
 create policy "Users can delete their own applications"
     on public.job_applications for delete
     using (auth.uid() = user_id);
+
+-- Jobs policies (public read-only)
+create policy "Anyone can view active jobs"
+    on public.jobs for select
+    using (is_active = true);
+
+-- Function to automatically set updated_at
+create or replace function public.set_updated_at()
+returns trigger as $$
+begin
+    new.updated_at = now();
+    return new;
+end;
+$$ language plpgsql;
+
+-- Create triggers for updated_at
+create trigger set_updated_at
+    before update on public.user_profiles
+    for each row
+    execute function public.set_updated_at();
+
+create trigger set_updated_at
+    before update on public.user_subscriptions
+    for each row
+    execute function public.set_updated_at();
+
+create trigger set_updated_at
+    before update on public.resumes
+    for each row
+    execute function public.set_updated_at();
+
+create trigger set_updated_at
+    before update on public.jobs
+    for each row
+    execute function public.set_updated_at();
+
+create trigger set_updated_at
+    before update on public.job_applications
+    for each row
+    execute function public.set_updated_at();
 
 -- Create indexes
 create index if not exists idx_user_profiles_email on public.user_profiles(email);

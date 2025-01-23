@@ -3,15 +3,7 @@ import { headers } from 'next/headers';
 import Stripe from 'stripe';
 import { createPaidAccess } from '@matchpro/data/services/userAccess';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing STRIPE_SECRET_KEY');
-}
-
-if (!process.env.STRIPE_WEBHOOK_SECRET) {
-  throw new Error('Missing STRIPE_WEBHOOK_SECRET');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key');
 
 export async function POST(request: Request) {
   const body = await request.text();

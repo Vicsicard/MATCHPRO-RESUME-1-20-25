@@ -4,6 +4,12 @@ import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
 import { Button } from '../Button';
 
+const AUTH_ROUTES = {
+  LOGIN: '/auth/login',
+  SIGNUP: '/auth/signup',
+  DASHBOARD: '/dashboard',
+};
+
 export function MainNav() {
   const { user, signOut } = useAuth();
 
@@ -20,7 +26,7 @@ export function MainNav() {
           <div className="flex items-center space-x-4">
             {user ? (
               <>
-                <Link href="/dashboard">
+                <Link href={AUTH_ROUTES.DASHBOARD}>
                   <Button variant="ghost">Dashboard</Button>
                 </Link>
                 <Button variant="outline" onClick={() => signOut()}>
@@ -29,10 +35,10 @@ export function MainNav() {
               </>
             ) : (
               <>
-                <Link href="/signin">
+                <Link href={AUTH_ROUTES.LOGIN}>
                   <Button variant="ghost">Sign In</Button>
                 </Link>
-                <Link href="/signup">
+                <Link href={AUTH_ROUTES.SIGNUP}>
                   <Button variant="primary">Get Started</Button>
                 </Link>
               </>

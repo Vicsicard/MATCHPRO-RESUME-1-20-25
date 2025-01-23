@@ -18,8 +18,12 @@
     "allowJs": true,
     "forceConsistentCasingInFileNames": true,
     "esModuleInterop": true,
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
+      "@/*": ["src/*"],
+      "@utils/*": ["libs/ui/src/utils/*"],
+      "@components/*": ["libs/ui/src/components/*"],
+      "@contexts/*": ["libs/ui/src/contexts/*"],
       "@libs/*": ["./libs/*"],
       "@apps/*": ["./apps/*"]
     },

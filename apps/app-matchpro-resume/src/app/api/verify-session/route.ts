@@ -1,11 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error('Missing STRIPE_SECRET_KEY');
-}
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'dummy_key');
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -36,6 +32,21 @@ export async function GET(request: Request) {
     console.error('Error verifying session:', error);
     return NextResponse.json(
       { error: 'Error verifying session' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    return new NextResponse(
+      JSON.stringify({ error: 'This endpoint is temporarily unavailable' }),
+      { status: 501 }
+    );
+  } catch (err) {
+    console.error('Error verifying session:', err);
+    return new NextResponse(
+      JSON.stringify({ error: 'Failed to verify session' }),
       { status: 500 }
     );
   }

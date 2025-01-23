@@ -9,26 +9,28 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@matchpro/ui": "workspace:*",
     "@matchpro/config": "workspace:*",
     "@matchpro/data": "workspace:*",
+    "@matchpro/ui": "workspace:*",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "framer-motion": "11.0.3",
     "lucide-react": "^0.321.0",
     "next": "14.2.23",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "stripe": "14.10.0",
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "autoprefixer": "^10.0.1",
+    "autoprefixer": "^10.4.17",
     "eslint": "^8",
     "eslint-config-next": "14.2.23",
-    "postcss": "^8",
-    "tailwindcss": "^3.3.0",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
     "typescript": "^5"
   }
 }

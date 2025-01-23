@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { AuthProvider, MainNav, Footer } from '@matchpro/ui';
+import { MainNav, Footer } from '@matchpro/ui';
+import { AuthProvider } from '@matchpro/data';
 import '../styles/globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -19,11 +20,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <div className="flex flex-col min-h-screen">
+          <div className="flex min-h-screen flex-col">
             <MainNav />
-            <main className="flex-grow bg-gradient-to-b from-gray-50 to-white">
-              {children}
-            </main>
+            <main className="flex-1">{children}</main>
             <Footer />
           </div>
         </AuthProvider>
